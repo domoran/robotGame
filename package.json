@@ -4,14 +4,18 @@
   "private": true,
   "scripts": {
     "serve": "vue-cli-service serve",
-    "build": "vue-cli-service build"
+    "build": "vue-cli-service build",
+    "grammar": "nearleyc src\\grammar\\robot.ne -o src\\grammar\\robot.js",
+    "testgrammar": "type src\\grammar\\example.robot | nearley-test -q src\\grammar\\robot.js"
   },
   "dependencies": {
     "bootstrap": "^4.3.1",
     "bootstrap-vue": "^2.1.0",
     "core-js": "^3.3.2",
     "konva": "^4.0.18",
+    "nearley": "^2.19.0",
     "vue": "^2.6.10",
+    "vue-awesome": "^4.0.2",
     "vue-class-component": "^7.0.2",
     "vue-konva": "^2.1.1",
     "vue-property-decorator": "^8.3.0"
