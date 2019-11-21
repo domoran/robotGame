@@ -9,7 +9,7 @@
         <v-layer>
            <GameField v-for="item in boardConfig.fields" :config="item" :width="fw" :height="fh" :bw="bw"/>
            <WallField v-for="wall in boardConfig.walls" :config="wall" :width="fw" :height="fh"  :bw="bw"/>
-           <RobotField v-for="robot in boardConfig.robots" :config="robot" :width="fw" :height="fh" :bw="bw"/>
+           <RobotField v-for="robot,index in boardConfig.robots" :config="robot" :index="index" :width="fw" :height="fh" :bw="bw"/>
         </v-layer>
      </v-stage>
     </b-card>
@@ -49,8 +49,8 @@ export default class Board extends Vue {
 
 
   @Watch('size') onSizeChange() {
-    this.height = this.size * (this.fh + this.bw) +this.bw;
-    this.width = this.size * (this.fw + this.bw) +this.bw;
+    this.height = this.size * (this.fh + this.bw) + this.bw;
+    this.width = this.size * (this.fw + this.bw) + this.bw;
     this.setupBoard();
   }
 
@@ -79,6 +79,8 @@ export default class Board extends Vue {
         this.boardConfig.field(new Field(x,y));
       }
     }
+
+    this.$emit("config", this.boardConfig);
   }
 
   mounted() {

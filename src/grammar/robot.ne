@@ -23,7 +23,8 @@ main -> (statement terminator):* statement:?   {%  x => { return flatten(filter(
 
 terminator -> ("\n" | "\r"):+ {% x=>null %}
 statement -> ((action | expression) _):+ {%  x=> { return filter(flatten(flatten(flatten(x)))) }  %}
-expression -> "[" _ sensor _ statement _ "]" {%  i=> { return { 'type': 'expression', 'sensor': i[2], 'actions': i[4] }} %}
+expression -> "[" _ sensor _ statement _ "]" {%  i=> { return { 'type': 'expression', 'sensor': i[2], 'actions': i[4], loop: false }} %}
+           | "{" _ sensor _ statement _ "}" {%  i=> { return { 'type': 'expression', 'sensor': i[2], 'actions': i[4], loop: true }} %}
 
 sensor -> ("F" | "W") {% x => x[0][0] %}
 action -> ("V" | "L" | "R") {% x => { return { 'type':'action', 'value': x[0][0] } } %}

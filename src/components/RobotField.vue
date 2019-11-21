@@ -1,4 +1,5 @@
 <template>
+
     <v-group :config="{
       x:(config.x-0.5) * (width + bw)+bw*0.5,
       y:(config.y-0.5) * (height + bw)+bw*0.5,
@@ -27,6 +28,8 @@
         fill:  'blue',
         strokeWidth: 0 }"/>
 
+        <v-text :config="{text: index+ '', fontStyle:'bold', fontSize: 8} "/>
+
     </v-group>
 </template>
 
@@ -39,6 +42,7 @@ export default class GameField extends Vue {
   @Prop() private height;
   @Prop() private width;
   @Prop() private bw;
+  @Prop() private index;
 
   private eyeR = (this.width+this.height)/15;
 

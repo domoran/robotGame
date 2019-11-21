@@ -1,11 +1,12 @@
 export default class Robot {
-  private x;
-  private y;
-  private direction;
+  public x;
+  public y;
+  public direction;
 
   constructor (x,y,direction) {
     this.x = x;
     this.y = y;
     this.direction = direction;
   }
+
 }
