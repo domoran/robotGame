@@ -5,11 +5,12 @@
       <b-form-input size="sm" placeholder="Roboter Name"></b-form-input>
       <b-form-input size="sm" placeholder="Width" v-model="size"></b-form-input>
       </b-form>
-      <v-stage ref="stage" :config="{width:width,height:height  }">
-        <v-layer>
+      <v-stage v-if="boardConfig" ref="stage" :config="{width:width,height:height  }">
+        <v-layer  @mousemove="handleMouseMove" @click="handleMouseClick">
            <GameField v-for="item in boardConfig.fields" :config="item" :width="fw" :height="fh" :bw="bw"/>
            <WallField v-for="wall in boardConfig.walls" :config="wall" :width="fw" :height="fh"  :bw="bw"/>
            <RobotField v-for="robot,index in boardConfig.robots" :config="robot" :index="index" :width="fw" :height="fh" :bw="bw"/>
+           <WallField v-if="editWall" :config="editWall" :width="fw" :height="fh"  :bw="bw"/>
         </v-layer>
      </v-stage>
     </b-card>
@@ -47,6 +48,50 @@ export default class Board extends Vue {
 
   private boardConfig = new GameConfig();
 
+
+  private isWall = false;
+  private editX = 0;
+  private editY = 0;
+  private editWall = null;
+
+
+  handleMouseClick(event) {
+    if (this.editWall) {
+      this.boardConfig.walls.forEach( (w,i) => {
+        if (this.editWall && w.x == this.editWall.x && w.y == this.editWall.y && w.isHorizontal == this.editWall.isHorizontal) {
+            this.editWall = null;
+            this.boardConfig.walls.splice(i,1);
+            return false;
+          }
+      });
+      if (this.editWall) this.boardConfig.walls.push(this.editWall);
+      this.editWall = null;
+    }
+  }
+
+  handleMouseMove(event) {
+    const mousePos = this.$refs.stage.getStage().getPointerPosition();
+    const x = mousePos.x;
+    const y = mousePos.y;
+
+    let fx = x/(this.fw+this.bw);
+    let fy = y/(this.fh+this.bw);
+    let fieldY = Math.floor(fy);
+    let fieldX = Math.floor(fx);
+    this.isWall = false;
+
+    fy = fy-fieldY;
+    fx = fx-fieldX;
+    let horizontal = false;
+
+    if (fy <= 0.2 && fx >= 0.2) { this.isWall = true; horizontal = true; }
+    if (fx <= 0.2 && fy < 0.8) { this.isWall = true; horizontal = false; }
+    if (fx >= 0.8 && fy < 0.8) { this.isWall = true; horizontal = false; fieldX += 1 }
+    if (fx >= 0.2 && fy > 0.8) { this.isWall = true; horizontal = true; fieldY += 1 }
+
+    if (this.isWall) this.editWall = new Wall(fieldX, fieldY, horizontal);
+    else this.editWall = null;
+  }
 
   @Watch('size') onSizeChange() {
     this.height = this.size * (this.fh + this.bw) + this.bw;

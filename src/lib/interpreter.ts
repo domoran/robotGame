@@ -21,11 +21,11 @@ export default class Interpreter {
 
       console.log("Interpreter forward");
 
-      this.ip.forEach(index => {
-          action = a[index];
+      this.ip.forEach((ipVal,index) => {
+          action = a[ipVal];
           if (!action) throw new Error("IP overflow!");
 
-          if (action.type == "expression") {
+          if (index != this.ip.length-1 && action.type == "expression") {
             a = action.actions;
             frames.push(a);
           }
@@ -33,7 +33,7 @@ export default class Interpreter {
 
       console.log("Executing Current Action:", action, "IP", this.ip);
 
-      const loop = this.execute(action);
+      this.execute(action);
 
       // overflow?
       // step to parent frame
@@ -62,27 +62,39 @@ export default class Interpreter {
       console.log("Executing action ", action, "with", robot);
 
       if (action.type == "expression") {
-          const sensorValue = this.executeSensor(robot);
+          const sensorValue = this.executeSensor(robot, action.sensor);
           if (sensorValue) {
             this.ip.push(0);
           } else {
             this.ip[this.ip.length-1] = this.ip[this.ip.length-1] + 1  // increase IP
           }
-          console.log("Executed Expression: ", action.sensor, "Stepped to ", this.ip)
+          console.log("Executed Expression: ", action.sensor, "Sensor: " + sensorValue,  "Stepped to ", this.ip)
       } else {
         if (action.value == "V") { this.executeForward(robot) }
         if (action.value == "R") { robot.direction = (robot.direction + 1) % 4 }
         if (action.value == "L") { robot.direction = (robot.direction - 1) % 4 }
+        if (robot.direction < 0) robot.direction += 4;
 
         this.ip[this.ip.length-1] = this.ip[this.ip.length-1] + 1  // increase IP
       }
   }
 
-  private executeSensor(robot) {
+  private executeSensor(robot,sensor) {
     const field = this.forwardField(robot);
-    console.log("Checking for wall at ", field);
+    const checkMatrix = {
+      0: [[robot.x,robot.y], true],
+      1: [field, false],
+      2: [field, true],
+      3: [[robot.x,robot.y], false],
+    }
 
-    return true;
+    const [f,h] = checkMatrix[robot.direction];
+
+    const walls = this.config.walls.filter( w=> w.x == f[0] && w.y == f[1] && w.isHorizontal == h);
+    console.log(this.config.walls.map(w=>w.x+"/"+w.y+ (w.isHorizontal ? "h" : "w")));
+    console.log("Checking for wall at ", [robot.x, robot.y], f, h, walls);
+
+    return sensor == "W" ? walls.length > 0 : walls.length == 0;
   }
 
   private forwardField(robot) {

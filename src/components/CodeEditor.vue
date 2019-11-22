@@ -1,5 +1,5 @@
 <template>
-    <b-container  class="float-left">
+    <b-container  v-if="configuration" class="float-left">
       <b-alert v-if="!configuration.robots && configuration.robots.length == 0" variant="danger" show>Bitte füge einen Roboter hinzu!</b-alert>
 
       <b-row v-if="configuration.robots && configuration.robots.length > 0">
@@ -31,7 +31,7 @@ import Parser from '@/lib/Parser'
 @Component
 export default class CodeEditor extends Vue {
   private editing = true;
-  private code = "{WV}R";
+  private code = "{FV[WR]}";
   private selectedRobot = 0;
 
   @Prop() configuration = null;

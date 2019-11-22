@@ -1,5 +1,5 @@
 <template>
-  <v-group :config="{x: bw/2,y:bw/2}">
+  <v-group ref="group" :config="{x: bw/2,y:bw/2}">
     <v-rect :config="{
       x: (width+bw)*config.x,
       y: (height+bw)*config.y,
@@ -9,6 +9,7 @@
       stroke: 'darkgray',
       strokeWidth: 1 }"/>
 </v-group>
+
 </template>
 
 <script lang="ts">

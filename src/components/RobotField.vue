@@ -1,8 +1,8 @@
 <template>
 
     <v-group :config="{
-      x:(config.x-0.5) * (width + bw)+bw*0.5,
-      y:(config.y-0.5) * (height + bw)+bw*0.5,
+      x:(config.x+0.5) * (width + bw)+bw*0.5,
+      y:(config.y+0.5) * (height + bw)+bw*0.5,
       rotation: 90*config.direction
     }">
 
