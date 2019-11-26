@@ -4,9 +4,15 @@ export default class Robot {
   public direction;
 
   constructor (x,y,direction) {
-    this.x = x;
-    this.y = y;
-    this.direction = direction;
+    if (typeof x === "object") {
+      this.x = x.x;
+      this.y = x.y;
+      this.direction = x.direction;
+    } else {
+      this.x = x;
+      this.y = y;
+      this.direction = direction;
+    }
   }
 
 }

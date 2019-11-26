@@ -4,8 +4,15 @@ export default class Wall {
   private isHorizontal;
 
   constructor (x,y,isHorizontal) {
-    this.x = x;
-    this.y = y;
-    this.isHorizontal = isHorizontal;
+    if (typeof x === "object") {
+      this.x = x.x;
+      this.y = x.y;
+      this.isHorizontal = x.isHorizontal;
+    } else {
+      this.x = x;
+      this.y = y;
+      this.isHorizontal = isHorizontal;
+    }
   }
+
 }
