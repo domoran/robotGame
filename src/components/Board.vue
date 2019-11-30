@@ -1,5 +1,5 @@
 <template>
-  <div class="board">
+  <div class="board" oncontextmenu="return false;" >
     <b-card>
       <b-form inline>
       <b-form-input size="sm" placeholder="Roboter Name"></b-form-input>
@@ -8,12 +8,13 @@
       <b-button size="sm" v-b-modal.modal-2>Load</b-button>
       </b-form>
       <v-stage v-if="boardConfig" ref="stage" :config="{width:width,height:height  }">
-        <v-layer  @mousemove="handleMouseMove" @click="handleMouseClick">
+        <v-layer @mousemove="handleMouseMove" @click="handleMouseClick" @mouseleave="handleMouseLeave">
            <GameField v-for="item in boardConfig.fields" :config="item" :width="fw" :height="fh" :bw="bw"/>
            <WallField v-for="wall in boardConfig.walls" :config="wall" :width="fw" :height="fh"  :bw="bw"/>
            <RobotField v-for="robot,index in boardConfig.robots" :config="robot" :index="index" :width="fw" :height="fh" :bw="bw"/>
            <WallField v-if="editWall" :config="editWall" :width="fw" :height="fh"  :bw="bw"/>
-           <RobotField v-if="isRobot" :config="isRobot" index="" :width="fw" :height="fh" :bw="bw"/>        </v-layer>
+           <RobotField v-if="isRobot" :config="isRobot" index="" :width="fw" :height="fh" :bw="bw"/>
+        </v-layer>
      </v-stage>
     </b-card>
 
@@ -71,8 +72,12 @@ export default class Board extends Vue {
   private selectedGameNameLoad = "";
   private selectedGameNameSave = "";
 
+  handleMouseLeave() {
+    this.editWall = null;
+    this.isRobot = null;
+  }
+
   handleLoad() {
-    console.log("Loading load!", this.selectedGameNameLoad);
     if (!localStorage) { alert("No local store found!"); return }
     let tehBoard = null;
     if (localStorage.boards) {
@@ -90,8 +95,8 @@ export default class Board extends Vue {
     this.size = tehBoard.size;
     var self = this;
     setTimeout(() => {
-        console.log("Loading: ", tehBoard.config);
         this.boardConfig = new GameConfig(tehBoard.config);
+        this.$emit("config", this.boardConfig);
     }, 100);
 
   }
@@ -113,7 +118,6 @@ export default class Board extends Vue {
   }
 
   loadGames () {
-    console.log("Loading games", localStorage, localStorage.boards)
     if (localStorage && localStorage.boards) {
         const boards = JSON.parse(localStorage.boards);
         this.availableGames = Object.keys(boards);
@@ -121,6 +125,7 @@ export default class Board extends Vue {
   }
 
   handleMouseClick(event) {
+
     if (this.editWall) {
       this.boardConfig.walls.forEach( (w,i) => {
         if (this.editWall && w.x == this.editWall.x && w.y == this.editWall.y && w.isHorizontal == this.editWall.isHorizontal) {
@@ -136,13 +141,19 @@ export default class Board extends Vue {
       this.boardConfig.robots.forEach( (w,i) => {
         if (this.isRobot && w.x == this.isRobot.x && w.y == this.isRobot.y) {
             this.isRobot = null;
-            this.boardConfig.robots.splice(i,1);
+            if (event.evt.button == 2) {
+              // right click, rotate robot
+              this.boardConfig.robots[i].direction = (this.boardConfig.robots[i].direction+1)%4;
+            } else {
+              this.boardConfig.robots.splice(i,1);
+            }
             return false;
           }
       });
       if (this.isRobot) this.boardConfig.robots.push(this.isRobot);
       this.isRobot = null;
     }
+    if (event.evt.button == 2) return event.cancelBubble = true;
   }
 
   handleMouseMove(event) {

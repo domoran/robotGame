@@ -91,8 +91,6 @@ export default class Interpreter {
     const [f,h] = checkMatrix[robot.direction];
 
     const walls = this.config.walls.filter( w=> w.x == f[0] && w.y == f[1] && w.isHorizontal == h);
-    console.log(this.config.walls.map(w=>w.x+"/"+w.y+ (w.isHorizontal ? "h" : "w")));
-    console.log("Checking for wall at ", [robot.x, robot.y], f, h, walls);
 
     return sensor == "W" ? walls.length > 0 : walls.length == 0;
   }
@@ -103,12 +101,14 @@ export default class Interpreter {
 
     const x = robot.x + incX[robot.direction];
     const y = robot.y + incY[robot.direction];
+
     return [x,y]
   }
 
   private executeForward(robot) {
     console.log("Executing forward!");
-    [robot.x,robot.y] = this.forwardField(robot);
+    const wall = this.executeSensor(robot, "W");
+    if (!wall) [robot.x,robot.y] = this.forwardField(robot);
     console.log("Moving Robot to ", robot.x, robot.y);
   }
 
