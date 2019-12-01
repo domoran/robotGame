@@ -93,11 +93,12 @@ export default class Board extends Vue {
     }
 
     this.size = tehBoard.size;
-    var self = this;
-    setTimeout(() => {
+    // var self = this;
+    // Wait for the size change to be executed!
+    Vue.nextTick(() => {
         this.boardConfig = new GameConfig(tehBoard.config);
         this.$emit("config", this.boardConfig);
-    }, 100);
+    });
 
   }
 

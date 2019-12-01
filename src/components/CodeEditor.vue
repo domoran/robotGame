@@ -1,5 +1,5 @@
 <template>
-    <b-container  v-if="configuration" class="float-left">
+    <b-container fluid v-if="configuration" >
       <b-alert v-if="!configuration.robots && configuration.robots.length == 0" variant="danger" show>Bitte füge einen Roboter hinzu!</b-alert>
 
       <b-row v-if="configuration.robots && configuration.robots.length > 0">
@@ -34,7 +34,7 @@ export default class CodeEditor extends Vue {
   private code = "{FV[WR]}";
   private selectedRobot = 0;
 
-  @Prop() configuration = null;
+  @Prop() configuration;
 
   play() {
     this.editing = !this.editing;

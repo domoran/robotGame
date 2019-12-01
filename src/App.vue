@@ -3,6 +3,7 @@
       <Nav/>
       <Board @config="configChange"/>
       <CodeEditor @codeChange="onCodeChange" @stepping="stepping" :configuration="boardConfiguration"/>
+      <CodeVisualizer :actions="actions" />
   </div>
 </template>
 
@@ -11,8 +12,9 @@ import { Component, Vue } from 'vue-property-decorator';
 import Board from './components/Board.vue';
 import Nav from './components/Nav.vue';
 import CodeEditor from './components/CodeEditor.vue';
-
+import CodeVisualizer from './components/CodeVisualizer.vue';
 import Interpreter from '@/lib/Interpreter';
+import { EventBus } from '@/lib/EventBus';
 
 
 @Component({
@@ -20,6 +22,7 @@ import Interpreter from '@/lib/Interpreter';
     Board,
     Nav,
     CodeEditor,
+    CodeVisualizer,
   },
 })
 export default class App extends Vue {
@@ -40,7 +43,7 @@ export default class App extends Vue {
   public onCodeChange(actions, selectedRobot) {
     console.log("Code Change: ", actions);
     this.actions = actions;
-    this.interpreter = new Interpreter(actions, this.boardConfiguration, selectedRobot);
+    this.interpreter = new Interpreter(actions, this.boardConfiguration, selectedRobot, EventBus);
   }
 
   public configChange(event) {
